@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const STARS = ['⭐', '🌟', '✨', '💫', '🌠']
 
-export default function HomeScreen({ onStart }) {
+export default function HomeScreen({ onStart, user, onLogout }) {
   const [floatY, setFloatY] = useState(0)
 
   useEffect(() => {
@@ -24,6 +24,26 @@ export default function HomeScreen({ onStart }) {
       padding: '24px',
       background: 'linear-gradient(135deg, #ecfdf5 0%, #eff6ff 50%, #fdf4ff 100%)',
     }}>
+      {/* 상단 유저 정보 */}
+      {user && (
+        <div style={{
+          position: 'fixed', top: '12px', right: '12px',
+          display: 'flex', alignItems: 'center', gap: '8px',
+          background: 'white', borderRadius: '99px', padding: '6px 14px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: '2px solid #bbf7d0',
+          zIndex: 100,
+        }}>
+          <span style={{ fontSize: '18px' }}>👤</span>
+          <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#1f2937', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {user?.user_metadata?.nickname || user?.email?.split('@')[0] || '모험가'}
+          </span>
+          <button onClick={onLogout} style={{
+            background: '#fee2e2', border: 'none', borderRadius: '99px',
+            padding: '4px 10px', fontSize: '12px', color: '#991b1b',
+            cursor: 'pointer', fontWeight: 'bold',
+          }}>로그아웃</button>
+        </div>
+      )}
       {/* 배경 별들 */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
         {[...Array(20)].map((_, i) => (
