@@ -69,60 +69,133 @@ function NPCBubble({ npcEmoji, npcName, text, type }) {
   )
 }
 
+const PASS_THRESHOLD = 2 // 3개 중 2개 이상 맞아야 통과
+
 export default function SimulationScreen({ playerData, actions }) {
   const isMobile = useIsMobile()
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
+  const [results, setResults] = useState([]) // true/false per scenario
   const [allDone, setAllDone] = useState(false)
+  const [retryMode, setRetryMode] = useState(false)
+  const [retryQueue, setRetryQueue] = useState([]) // indices to retry
+  const [retryIdx, setRetryIdx] = useState(0)
+  const [retryScore, setRetryScore] = useState(0)
 
-  const scenario = SCENARIOS[scenarioIdx]
+  const scenario = retryMode ? SCENARIOS[retryQueue[retryIdx]] : SCENARIOS[scenarioIdx]
 
   const handleChoice = (choice, idx) => {
     if (selected !== null) return
     setSelected(idx)
-    if (choice.correct) {
+    const correct = choice.correct
+    if (correct) {
       actions.addExp(scenario.exp)
       actions.addCoins(10)
       actions.updateProgress(scenario.progressKey, 20)
       actions.updateProgress('selfControl', 10)
-      setScore(prev => prev + 1)
-      actions.addBadge(`시나리오 ${scenarioIdx + 1} 클리어 🏅`)
+      if (!retryMode) {
+        setScore(prev => prev + 1)
+        actions.addBadge(`시나리오 ${scenarioIdx + 1} 클리어 🏅`)
+      } else {
+        setRetryScore(prev => prev + 1)
+      }
     } else {
       actions.addCoins(2)
     }
   }
 
   const handleNext = () => {
+    const correct = scenario.choices[selected].correct
+    if (retryMode) {
+      const newResults = [...results]
+      newResults[retryQueue[retryIdx]] = correct
+      setResults(newResults)
+      if (retryIdx < retryQueue.length - 1) {
+        setRetryIdx(prev => prev + 1)
+        setSelected(null)
+      } else {
+        setAllDone(true)
+      }
+      return
+    }
+
+    const newResults = [...results, correct]
+    setResults(newResults)
+
     if (scenarioIdx < SCENARIOS.length - 1) {
       setScenarioIdx(prev => prev + 1)
       setSelected(null)
     } else {
-      setAllDone(true)
+      const finalScore = newResults.filter(Boolean).length
+      if (finalScore >= PASS_THRESHOLD) {
+        setScore(finalScore)
+        setAllDone(true)
+      } else {
+        // 재도전 모드: 틀린 시나리오만 다시
+        const failedIndices = newResults.map((r, i) => r ? null : i).filter(i => i !== null)
+        setRetryQueue(failedIndices)
+        setRetryIdx(0)
+        setRetryMode(true)
+        setSelected(null)
+      }
     }
   }
 
+  const finalScore = retryMode
+    ? results.filter(Boolean).length + retryScore
+    : results.filter(Boolean).length + (selected !== null && scenario?.choices[selected]?.correct ? 1 : 0)
+
   if (allDone) {
-    const perfect = score === SCENARIOS.length
+    const totalCorrect = results.filter(Boolean).length
+    const perfect = totalCorrect === SCENARIOS.length
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <StatusBar playerData={playerData} />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '24px' }}>
-          <div style={{ fontSize: '80px', marginBottom: '16px' }}>{perfect ? '🥇' : '🎖️'}</div>
-          <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>
-            실전 연습 완료!
-          </h2>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '24px', textAlign: 'center' }}>
+          <div style={{ fontSize: '80px', marginBottom: '12px' }}>{perfect ? '🥇' : totalCorrect >= PASS_THRESHOLD ? '🎖️' : '💪'}</div>
+          <h2 style={{ fontSize: '26px', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>실전 연습 완료!</h2>
           <div style={{
             background: '#fef3c7', border: '2px solid #fcd34d', borderRadius: '16px',
-            padding: '16px 28px', marginBottom: '20px', fontSize: '20px', fontWeight: 'bold', color: '#92400e',
+            padding: '14px 24px', marginBottom: '20px', fontSize: '18px', fontWeight: 'bold', color: '#92400e',
           }}>
-            {score}/{SCENARIOS.length} 정답! {perfect ? '🌟 퍼펙트!' : '잘 했어요!'}
+            {totalCorrect}/{SCENARIOS.length} 정답! {perfect ? '🌟 퍼펙트!' : retryMode ? '🔄 재도전 완료!' : '잘 했어요!'}
           </div>
           <button onClick={() => actions.goTo('dashboard')} style={{
             background: 'linear-gradient(135deg, #f59e0b, #ef4444)', color: 'white', border: 'none',
-            borderRadius: '99px', padding: '16px 40px', fontSize: '20px', fontWeight: 'bold',
+            borderRadius: '99px', padding: '15px 36px', fontSize: '18px', fontWeight: 'bold',
             cursor: 'pointer', boxShadow: '0 8px 24px rgba(245,158,11,0.4)',
           }}>성장 리포트 보기! 📊</button>
+        </div>
+        <ProgressGoals progress={playerData.progress} />
+      </div>
+    )
+  }
+
+  // 재도전 안내 화면
+  if (retryMode && retryIdx === 0 && selected === null && results.length > 0) {
+    const failed = retryQueue.length
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <StatusBar playerData={playerData} />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '24px', textAlign: 'center' }}>
+          <div style={{ fontSize: '72px', marginBottom: '12px' }}>💪</div>
+          <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: '#f59e0b', marginBottom: '8px' }}>아직 연습이 필요해요!</h2>
+          <p style={{ color: '#6b7280', marginBottom: '8px', fontSize: '15px' }}>
+            통과 기준: {PASS_THRESHOLD}개 이상 정답<br />
+            현재 결과: {results.filter(Boolean).length}/{SCENARIOS.length}개 정답
+          </p>
+          <div style={{
+            background: '#fee2e2', border: '2px solid #fca5a5', borderRadius: '14px',
+            padding: '14px 20px', marginBottom: '20px', fontSize: '14px', color: '#991b1b',
+          }}>
+            틀린 상황 {failed}개를 다시 도전해봐요!<br />이번엔 잘 할 수 있을 거예요 🌟
+          </div>
+          <button onClick={() => setSelected(null)} style={{
+            background: 'linear-gradient(135deg, #059669, #0284c7)', color: 'white', border: 'none',
+            borderRadius: '99px', padding: '14px 36px', fontSize: '17px', fontWeight: 'bold',
+            cursor: 'pointer', boxShadow: '0 6px 20px rgba(5,150,105,0.4)',
+          }}>🔄 다시 도전하기!</button>
         </div>
         <ProgressGoals progress={playerData.progress} />
       </div>
@@ -134,19 +207,30 @@ export default function SimulationScreen({ playerData, actions }) {
       <StatusBar playerData={playerData} />
       <div style={{ flex: 1, padding: isMobile ? '12px' : '20px', maxWidth: '640px', margin: '0 auto', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: isMobile ? '10px' : '16px' }}>
-          <h2 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: 'bold', color: '#059669', marginBottom: '4px' }}>
-            🎭 3단계: 실전 연습
+          <h2 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: 'bold', color: retryMode ? '#f59e0b' : '#059669', marginBottom: '4px' }}>
+            {retryMode ? '🔄 재도전 중!' : '🎭 3단계: 실전 연습'}
           </h2>
+          {retryMode && (
+            <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 'bold', marginBottom: '4px' }}>
+              틀린 상황 재도전 {retryIdx + 1}/{retryQueue.length}
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px' }}>
-            {SCENARIOS.map((_, i) => (
-              <div key={i} style={{
-                width: '28px', height: '28px', borderRadius: '50%',
-                background: i < scenarioIdx ? '#059669' : i === scenarioIdx ? '#f59e0b' : '#e5e7eb',
-                color: i <= scenarioIdx ? 'white' : '#9ca3af',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '13px', fontWeight: 'bold',
-              }}>{i < scenarioIdx ? '✓' : i + 1}</div>
-            ))}
+            {SCENARIOS.map((_, i) => {
+              const isDone = retryMode ? results[i] !== undefined : i < scenarioIdx
+              const isCurrent = retryMode ? retryQueue[retryIdx] === i : i === scenarioIdx
+              const isCorrect = results[i] === true
+              const isWrong = results[i] === false
+              return (
+                <div key={i} style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
+                  background: isCurrent ? '#f59e0b' : isCorrect ? '#059669' : isWrong ? '#ef4444' : isDone ? '#d1d5db' : '#e5e7eb',
+                  color: (isCurrent || isCorrect || isWrong) ? 'white' : '#9ca3af',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '13px', fontWeight: 'bold',
+                }}>{isCorrect ? '✓' : isWrong ? '✗' : i + 1}</div>
+              )
+            })}
           </div>
         </div>
 
@@ -217,7 +301,10 @@ export default function SimulationScreen({ playerData, actions }) {
               borderRadius: '99px', padding: '14px 36px', fontSize: '18px', fontWeight: 'bold',
               cursor: 'pointer', boxShadow: '0 6px 20px rgba(5,150,105,0.4)',
             }}>
-              {scenarioIdx < SCENARIOS.length - 1 ? '다음 상황 →' : '결과 보기! 🎉'}
+              {retryMode
+                ? retryIdx < retryQueue.length - 1 ? '다음 재도전 →' : '결과 보기! 🎉'
+                : scenarioIdx < SCENARIOS.length - 1 ? '다음 상황 →' : '결과 보기! 🎉'
+              }
             </button>
           </div>
         )}

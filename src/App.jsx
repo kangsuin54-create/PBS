@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './index.css'
 import { supabase } from './lib/supabase'
 import { INITIAL_EQUIPPED } from './data/shopItems'
+import LevelUpPopup from './components/LevelUpPopup'
 import AuthScreen from './screens/AuthScreen'
 import HomeScreen from './screens/HomeScreen'
 import LearningScreen from './screens/LearningScreen'
@@ -29,6 +30,7 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true)
   const [screen, setScreen] = useState('home')
   const [playerData, setPlayerData] = useState(null)
+  const [levelUpEvent, setLevelUpEvent] = useState(null) // level number
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,9 +51,17 @@ export default function App() {
   }
 
   // ── 게임 액션 ──
+  const LEVEL_BONUS = { 2:20, 3:30, 4:40, 5:60, 6:80, 7:100, 8:120, 9:150, 10:200 }
+
   const addExp = (amount) => setPlayerData(prev => {
     const newExp = prev.exp + amount
-    return { ...prev, exp: newExp, level: Math.floor(newExp / 100) + 1 }
+    const newLevel = Math.floor(newExp / 100) + 1
+    if (newLevel > prev.level) {
+      setLevelUpEvent(newLevel)
+      const bonus = LEVEL_BONUS[newLevel] || newLevel * 10
+      return { ...prev, exp: newExp, level: newLevel, coins: (prev.coins || 0) + bonus }
+    }
+    return { ...prev, exp: newExp, level: newLevel }
   })
 
   const addCoins = (amount) => setPlayerData(prev => ({ ...prev, coins: (prev.coins || 0) + amount }))
@@ -136,6 +146,12 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0fdf4 0%, #eff6ff 100%)' }}>
       {screens[screen] || screens.home}
+      {levelUpEvent && (
+        <LevelUpPopup
+          level={levelUpEvent}
+          onClose={() => setLevelUpEvent(null)}
+        />
+      )}
     </div>
   )
 }
