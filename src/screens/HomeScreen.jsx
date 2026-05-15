@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import useIsMobile from '../hooks/useIsMobile'
+import BottomNav from '../components/BottomNav'
+import CharacterPreview from '../components/CharacterPreview'
 
-export default function HomeScreen({ onStart, user, onLogout }) {
+export default function HomeScreen({ onStart, user, onLogout, playerData, actions }) {
   const isMobile = useIsMobile()
   const [floatY, setFloatY] = useState(0)
 
@@ -12,6 +14,7 @@ export default function HomeScreen({ onStart, user, onLogout }) {
   }, [])
 
   return (
+    <>
     <div style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
@@ -99,9 +102,11 @@ export default function HomeScreen({ onStart, user, onLogout }) {
         maxWidth: '320px',
       }}>🚀 모험 시작하기!</button>
 
-      <p style={{ marginTop: '14px', fontSize: '12px', color: '#9ca3af' }}>
+      <p style={{ marginTop: '14px', fontSize: '12px', color: '#9ca3af', marginBottom: '70px' }}>
         PBS 기반 사회성 훈련 프로그램
       </p>
     </div>
+    <BottomNav current="home" onNavigate={actions.goTo} />
+    </>
   )
 }

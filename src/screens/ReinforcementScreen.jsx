@@ -151,6 +151,7 @@ export default function ReinforcementScreen({ playerData, actions }) {
 
   const handleAction = (action) => {
     const r = action.reward
+    actions.addCoins(8)
     if (r.type === 'exp') {
       actions.addExp(r.amount)
       actions.updateProgress(r.progress, r.progressAmt)

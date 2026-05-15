@@ -83,10 +83,13 @@ export default function SimulationScreen({ playerData, actions }) {
     setSelected(idx)
     if (choice.correct) {
       actions.addExp(scenario.exp)
+      actions.addCoins(10)
       actions.updateProgress(scenario.progressKey, 20)
       actions.updateProgress('selfControl', 10)
       setScore(prev => prev + 1)
       actions.addBadge(`시나리오 ${scenarioIdx + 1} 클리어 🏅`)
+    } else {
+      actions.addCoins(2)
     }
   }
 

@@ -117,6 +117,7 @@ export default function LearningScreen({ playerData, actions }) {
     if (learnedCards.includes(rule.id)) return
     setLearnedCards(prev => [...prev, rule.id])
     actions.addExp(rule.exp)
+    actions.addCoins(5)
     actions.updateProgress(rule.progressKey, rule.progressAmount)
     actions.updateProgress('ruleUnderstanding', 20)
     setShowReward(rule)

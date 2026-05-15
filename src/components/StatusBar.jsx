@@ -56,6 +56,17 @@ export default function StatusBar({ playerData }) {
         🤝 {playerData.teamPoints}
       </div>
 
+      {/* 코인 */}
+      <div style={{
+        background: '#fef3c7', borderRadius: '10px',
+        padding: isMobile ? '3px 8px' : '4px 12px',
+        fontSize: isMobile ? '11px' : '13px',
+        fontWeight: 'bold', color: '#92400e',
+        border: '2px solid #fcd34d', flexShrink: 0,
+      }}>
+        🪙 {playerData.coins || 0}
+      </div>
+
       {/* 배지 */}
       <div style={{
         background: '#fdf4ff', borderRadius: '10px',
