@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import StatusBar from '../components/StatusBar'
 import ProgressGoals from '../components/ProgressGoals'
+import useIsMobile from '../hooks/useIsMobile'
 
 const SCENARIOS = [
   {
@@ -69,6 +70,7 @@ function NPCBubble({ npcEmoji, npcName, text, type }) {
 }
 
 export default function SimulationScreen({ playerData, actions }) {
+  const isMobile = useIsMobile()
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
@@ -127,9 +129,9 @@ export default function SimulationScreen({ playerData, actions }) {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <StatusBar playerData={playerData} />
-      <div style={{ flex: 1, padding: '20px', maxWidth: '640px', margin: '0 auto', width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: '#059669', marginBottom: '4px' }}>
+      <div style={{ flex: 1, padding: isMobile ? '12px' : '20px', maxWidth: '640px', margin: '0 auto', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '10px' : '16px' }}>
+          <h2 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: 'bold', color: '#059669', marginBottom: '4px' }}>
             🎭 3단계: 실전 연습
           </h2>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px' }}>
@@ -147,13 +149,13 @@ export default function SimulationScreen({ playerData, actions }) {
 
         {/* 상황 설명 */}
         <div style={{
-          background: '#fffbeb', border: '2px solid #fcd34d', borderRadius: '16px',
-          padding: '16px', marginBottom: '14px',
+          background: '#fffbeb', border: '2px solid #fcd34d', borderRadius: '14px',
+          padding: isMobile ? '12px' : '16px', marginBottom: '10px',
         }}>
-          <div style={{ fontWeight: 'bold', color: '#92400e', fontSize: '15px', marginBottom: '6px' }}>
+          <div style={{ fontWeight: 'bold', color: '#92400e', fontSize: isMobile ? '13px' : '15px', marginBottom: '4px' }}>
             📍 {scenario.title}
           </div>
-          <div style={{ color: '#78350f', fontSize: '14px', lineHeight: '1.6' }}>
+          <div style={{ color: '#78350f', fontSize: isMobile ? '13px' : '14px', lineHeight: '1.6' }}>
             {scenario.situation}
           </div>
         </div>
@@ -167,7 +169,7 @@ export default function SimulationScreen({ playerData, actions }) {
         />
 
         {/* 선택지 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '10px', marginBottom: '10px' }}>
           {scenario.choices.map((choice, i) => {
             const isSelected = selected === i
             const isCorrect = choice.correct
@@ -180,11 +182,13 @@ export default function SimulationScreen({ playerData, actions }) {
 
             return (
               <button key={i} onClick={() => handleChoice(choice, i)} style={{
-                background: bg, border: `2px solid ${border}`, borderRadius: '14px',
-                padding: '14px 16px', cursor: selected !== null ? 'default' : 'pointer',
-                textAlign: 'left', fontSize: '15px', color, fontWeight: '500',
+                background: bg, border: `2px solid ${border}`, borderRadius: '12px',
+                padding: isMobile ? '12px 14px' : '14px 16px',
+                cursor: selected !== null ? 'default' : 'pointer',
+                textAlign: 'left', fontSize: isMobile ? '13px' : '15px', color, fontWeight: '500',
                 transition: 'all 0.3s', boxShadow: selected !== null ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
                 transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                lineHeight: '1.4',
               }}>
                 {selected !== null && isSelected && (isCorrect ? '✅ ' : '❌ ')}
                 {choice.text}

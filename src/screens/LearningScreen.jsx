@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import StatusBar from '../components/StatusBar'
 import ProgressGoals from '../components/ProgressGoals'
+import useIsMobile from '../hooks/useIsMobile'
 
 const RULES = [
   {
@@ -103,6 +104,7 @@ function RewardPopup({ reward, onClose }) {
 }
 
 export default function LearningScreen({ playerData, actions }) {
+  const isMobile = useIsMobile()
   const [currentCard, setCurrentCard] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [learnedCards, setLearnedCards] = useState([])
@@ -153,15 +155,15 @@ export default function LearningScreen({ playerData, actions }) {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <StatusBar playerData={playerData} />
-      <div style={{ flex: 1, padding: '20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: '#1e40af', marginBottom: '8px' }}>
+      <div style={{ flex: 1, padding: isMobile ? '12px' : '20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '10px' : '16px' }}>
+          <h2 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: 'bold', color: '#1e40af', marginBottom: '8px' }}>
             📚 1단계: 규칙 배우기
           </h2>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
             {RULES.map((r, i) => (
               <div key={r.id} onClick={() => { setCurrentCard(i); setFlipped(false) }} style={{
-                width: '32px', height: '32px', borderRadius: '50%',
+                width: isMobile ? '36px' : '32px', height: isMobile ? '36px' : '32px', borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s',
                 background: learnedCards.includes(r.id) ? '#059669' : i === currentCard ? '#1d4ed8' : '#e5e7eb',
@@ -174,34 +176,34 @@ export default function LearningScreen({ playerData, actions }) {
         </div>
 
         <div onClick={() => setFlipped(!flipped)} style={{
-          background: rule.color, border: `3px solid ${rule.border}`, borderRadius: '24px',
-          padding: '28px', marginBottom: '16px', cursor: 'pointer', transition: 'all 0.3s',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+          background: rule.color, border: `3px solid ${rule.border}`, borderRadius: '20px',
+          padding: isMobile ? '18px' : '28px', marginBottom: '12px', cursor: 'pointer', transition: 'all 0.3s',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-            <div style={{ fontSize: '64px', marginBottom: '8px' }}>{rule.emoji}</div>
-            <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: rule.textColor, marginBottom: '6px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+            <div style={{ fontSize: isMobile ? '48px' : '64px', marginBottom: '6px' }}>{rule.emoji}</div>
+            <h3 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: rule.textColor, marginBottom: '4px' }}>
               {rule.title}
             </h3>
-            <p style={{ color: rule.textColor, fontSize: '15px', opacity: 0.8 }}>{rule.description}</p>
+            <p style={{ color: rule.textColor, fontSize: isMobile ? '13px' : '15px', opacity: 0.8 }}>{rule.description}</p>
           </div>
 
           {!flipped ? (
             <div style={{
               background: 'rgba(255,255,255,0.6)', borderRadius: '12px', padding: '12px',
-              textAlign: 'center', color: rule.textColor, fontSize: '14px',
+              textAlign: 'center', color: rule.textColor, fontSize: isMobile ? '13px' : '14px',
             }}>
-              👆 카드를 클릭하면 예시를 볼 수 있어요!
+              👆 카드를 탭하면 예시를 볼 수 있어요!
             </div>
           ) : (
             <div>
-              <div style={{ background: '#fee2e2', borderRadius: '12px', padding: '12px', marginBottom: '10px' }}>
-                <div style={{ fontWeight: 'bold', color: '#991b1b', fontSize: '13px', marginBottom: '4px' }}>{rule.example.wrong.actor}</div>
-                <div style={{ color: '#7f1d1d', fontSize: '14px' }}>{rule.example.wrong.text}</div>
+              <div style={{ background: '#fee2e2', borderRadius: '12px', padding: '10px', marginBottom: '8px' }}>
+                <div style={{ fontWeight: 'bold', color: '#991b1b', fontSize: '12px', marginBottom: '3px' }}>{rule.example.wrong.actor}</div>
+                <div style={{ color: '#7f1d1d', fontSize: isMobile ? '13px' : '14px' }}>{rule.example.wrong.text}</div>
               </div>
-              <div style={{ background: '#dcfce7', borderRadius: '12px', padding: '12px', marginBottom: '10px' }}>
-                <div style={{ fontWeight: 'bold', color: '#14532d', fontSize: '13px', marginBottom: '4px' }}>{rule.example.right.actor}</div>
-                <div style={{ color: '#166534', fontSize: '14px' }}>{rule.example.right.text}</div>
+              <div style={{ background: '#dcfce7', borderRadius: '12px', padding: '10px', marginBottom: '8px' }}>
+                <div style={{ fontWeight: 'bold', color: '#14532d', fontSize: '12px', marginBottom: '3px' }}>{rule.example.right.actor}</div>
+                <div style={{ color: '#166534', fontSize: isMobile ? '13px' : '14px' }}>{rule.example.right.text}</div>
               </div>
               <div style={{
                 background: 'rgba(255,255,255,0.7)', borderRadius: '12px', padding: '10px',
@@ -213,7 +215,7 @@ export default function LearningScreen({ playerData, actions }) {
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => { if (currentCard > 0) { setCurrentCard(p => p - 1); setFlipped(false) } }}
             disabled={currentCard === 0}
             style={{

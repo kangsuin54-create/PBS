@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import useIsMobile from '../hooks/useIsMobile'
 
 const GOALS = [
   { key: 'selfControl', label: '자기조절', emoji: '🧘', color: '#a78bfa' },
@@ -42,6 +43,7 @@ function AnimatedBar({ value, color, delay }) {
 }
 
 export default function DashboardScreen({ playerData, onRestart }) {
+  const isMobile = useIsMobile()
   const [showConfetti, setShowConfetti] = useState(true)
   const totalProgress = Object.values(playerData.progress).reduce((a, b) => a + b, 0) / 4
   const grade = totalProgress >= 80 ? '🥇 금' : totalProgress >= 60 ? '🥈 은' : totalProgress >= 40 ? '🥉 동' : '📜 참가'
@@ -52,16 +54,16 @@ export default function DashboardScreen({ playerData, onRestart }) {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fdf4ff, #eff6ff, #ecfdf5)', padding: '20px' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fdf4ff, #eff6ff, #ecfdf5)', padding: isMobile ? '12px' : '20px' }}>
       {/* 상단 축하 */}
-      <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+      <div style={{ textAlign: 'center', marginBottom: isMobile ? '14px' : '24px' }}>
         {showConfetti && (
-          <div style={{ fontSize: '32px', marginBottom: '8px', animation: 'bounce-in 0.5s ease-out' }}>
+          <div style={{ fontSize: '28px', marginBottom: '6px', animation: 'bounce-in 0.5s ease-out' }}>
             🎊🎉🎊🎉🎊
           </div>
         )}
         <h1 style={{
-          fontSize: '28px', fontWeight: '900', marginBottom: '6px',
+          fontSize: isMobile ? '22px' : '28px', fontWeight: '900', marginBottom: '6px',
           background: 'linear-gradient(135deg, #7c3aed, #db2777, #f59e0b)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
@@ -88,7 +90,7 @@ export default function DashboardScreen({ playerData, onRestart }) {
 
       {/* 플레이어 스탯 */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '16px',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? '8px' : '10px', marginBottom: isMobile ? '10px' : '16px',
       }}>
         {[
           { label: '획득 EXP', value: `${playerData.exp}`, emoji: '⭐', color: '#fef3c7', border: '#fcd34d' },
@@ -97,11 +99,11 @@ export default function DashboardScreen({ playerData, onRestart }) {
         ].map(stat => (
           <div key={stat.label} style={{
             background: stat.color, border: `2px solid ${stat.border}`,
-            borderRadius: '16px', padding: '14px', textAlign: 'center',
+            borderRadius: '14px', padding: isMobile ? '10px 6px' : '14px', textAlign: 'center',
           }}>
-            <div style={{ fontSize: '28px', marginBottom: '4px' }}>{stat.emoji}</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1f2937' }}>{stat.value}</div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>{stat.label}</div>
+            <div style={{ fontSize: isMobile ? '22px' : '28px', marginBottom: '3px' }}>{stat.emoji}</div>
+            <div style={{ fontSize: isMobile ? '16px' : '20px', fontWeight: 'bold', color: '#1f2937' }}>{stat.value}</div>
+            <div style={{ fontSize: '11px', color: '#6b7280' }}>{stat.label}</div>
           </div>
         ))}
       </div>

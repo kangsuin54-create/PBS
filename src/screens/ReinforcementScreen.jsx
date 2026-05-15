@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import StatusBar from '../components/StatusBar'
 import ProgressGoals from '../components/ProgressGoals'
+import useIsMobile from '../hooks/useIsMobile'
 
 const ACTIONS = [
   {
@@ -143,6 +144,7 @@ function GaugeEffect({ current }) {
 }
 
 export default function ReinforcementScreen({ playerData, actions }) {
+  const isMobile = useIsMobile()
   const [effect, setEffect] = useState(null)
   const [clickedActions, setClickedActions] = useState([])
   const [allDone, setAllDone] = useState(false)
@@ -196,35 +198,36 @@ export default function ReinforcementScreen({ playerData, actions }) {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <StatusBar playerData={playerData} />
-      <div style={{ flex: 1, padding: '20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 'bold', color: '#7c3aed', marginBottom: '6px' }}>
+      <div style={{ flex: 1, padding: isMobile ? '12px' : '20px', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+        <div style={{ textAlign: 'center', marginBottom: isMobile ? '14px' : '20px' }}>
+          <h2 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: 'bold', color: '#7c3aed', marginBottom: '6px' }}>
             🎁 2단계: 보상 받기
           </h2>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>착한 행동을 선택하고 보상을 받아요!</p>
+          <p style={{ color: '#6b7280', fontSize: '13px' }}>착한 행동을 선택하고 보상을 받아요!</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '10px' : '14px' }}>
           {ACTIONS.map(action => {
             const done = clickedActions.includes(action.id)
             return (
               <button key={action.id} onClick={() => !done && handleAction(action)} style={{
                 background: done ? '#f3f4f6' : action.color,
                 border: `3px solid ${done ? '#d1d5db' : action.border}`,
-                borderRadius: '20px', padding: '20px 14px',
+                borderRadius: '18px', padding: isMobile ? '16px 10px' : '20px 14px',
                 cursor: done ? 'default' : 'pointer',
                 transition: 'all 0.3s', textAlign: 'center',
                 opacity: done ? 0.6 : 1,
                 transform: done ? 'scale(0.97)' : 'scale(1)',
                 boxShadow: done ? 'none' : '0 4px 16px rgba(0,0,0,0.1)',
+                minHeight: isMobile ? '110px' : '130px',
               }}>
-                <div style={{ fontSize: '48px', marginBottom: '8px', filter: done ? 'grayscale(1)' : 'none' }}>
+                <div style={{ fontSize: isMobile ? '36px' : '48px', marginBottom: '6px', filter: done ? 'grayscale(1)' : 'none' }}>
                   {done ? '✅' : action.emoji}
                 </div>
-                <div style={{ fontWeight: 'bold', fontSize: '15px', color: done ? '#9ca3af' : '#1f2937', marginBottom: '4px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: isMobile ? '13px' : '15px', color: done ? '#9ca3af' : '#1f2937', marginBottom: '3px' }}>
                   {action.label}
                 </div>
-                <div style={{ fontSize: '12px', color: done ? '#d1d5db' : '#6b7280' }}>
+                <div style={{ fontSize: '11px', color: done ? '#d1d5db' : '#6b7280' }}>
                   {done ? '완료!' : action.desc}
                 </div>
               </button>

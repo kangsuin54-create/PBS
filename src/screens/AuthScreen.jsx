@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import useIsMobile from '../hooks/useIsMobile'
 
 export default function AuthScreen({ onLogin }) {
+  const isMobile = useIsMobile()
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -49,10 +51,11 @@ export default function AuthScreen({ onLogin }) {
       minHeight: '100vh',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(135deg, #ecfdf5 0%, #eff6ff 50%, #fdf4ff 100%)',
-      padding: '20px',
+      padding: isMobile ? '12px' : '20px',
     }}>
       <div style={{
-        background: 'white', borderRadius: '28px', padding: '36px 28px',
+        background: 'white', borderRadius: '24px',
+        padding: isMobile ? '24px 18px' : '36px 28px',
         maxWidth: '380px', width: '100%',
         boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
         border: '3px solid #bbf7d0',
