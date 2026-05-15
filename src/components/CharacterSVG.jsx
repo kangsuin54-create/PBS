@@ -472,7 +472,6 @@ function CharacterBase({ gender }) {
       <circle cx="100" cy="95" r="48" fill="#fde68a" stroke="#fbbf24" strokeWidth="1.5" />
 
       {/* ── 머리카락 ── */}
-      {isMobile ? null : null}
       {isMale ? (
         // 남자 - 짧은 갈색 헤어
         <g fill={hairColor}>
