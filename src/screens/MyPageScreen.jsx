@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { SHOP_ITEMS } from '../data/shopItems'
-import CharacterPreview from '../components/CharacterPreview'
+import CharacterSVG from '../components/CharacterSVG'
 import BottomNav from '../components/BottomNav'
 import useIsMobile from '../hooks/useIsMobile'
 import { supabase } from '../lib/supabase'
@@ -60,7 +60,7 @@ export default function MyPageScreen({ playerData, user, actions, onLogout }) {
         }}>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <div style={{ flex: '0 0 130px' }}>
-              <CharacterPreview equipped={equipped} size="md" playerData={playerData} gender={playerData.gender || 'male'} />
+              <CharacterSVG equipped={equipped} gender={playerData.gender || 'male'} size="md" playerData={playerData} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 'bold', fontSize: isMobile ? '17px' : '20px', color: '#1f2937', marginBottom: '4px' }}>

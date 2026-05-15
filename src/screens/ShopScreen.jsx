@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { SHOP_ITEMS, CATEGORIES } from '../data/shopItems'
-import CharacterPreview from '../components/CharacterPreview'
+import CharacterSVG from '../components/CharacterSVG'
 import BottomNav from '../components/BottomNav'
 import useIsMobile from '../hooks/useIsMobile'
 
@@ -67,7 +67,7 @@ export default function ShopScreen({ playerData, actions }) {
           <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#7c3aed', marginBottom: '8px' }}>
             ✨ 내 캐릭터 미리보기
           </div>
-          <CharacterPreview equipped={previewEquipped} size="lg" playerData={playerData} gender={playerData.gender || 'male'} />
+          <CharacterSVG equipped={previewEquipped} gender={playerData.gender || 'male'} size="lg" playerData={playerData} />
           {previewItem && (
             <div style={{
               textAlign: 'center', marginTop: '8px', fontSize: '13px',
