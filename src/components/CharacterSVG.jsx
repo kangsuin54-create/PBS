@@ -1,60 +1,28 @@
-/*
-  ViewBox: 0 0 200 260
-  캐릭터 이미지 영역: x=0, y=30, w=200, h=230
-  → 머리 꼭대기: y≈52  /  눈 레벨: y≈88  /  목: y≈136  /  가슴: y≈152
-*/
-
-// 각 아이템의 SVG 내 좌표 (x, y, w, h) + blend 모드
-const POSITIONS = {
-  // ── 모자 (머리 위에 딱) ──────────────────────────
-  hat_baseball:  { x: 52,  y: 6,   w: 96,  h: 58 },
-  hat_tophat:    { x: 58,  y: -4,  w: 84,  h: 62 },
-  hat_grad:      { x: 54,  y: 4,   w: 92,  h: 58 },
-  hat_crown:     { x: 58,  y: 10,  w: 84,  h: 50 },
-  hat_wizard:    { x: 50,  y: -6,  w: 100, h: 68 },
-  hat_santa:     { x: 52,  y: 4,   w: 96,  h: 58 },
-
-  // ── 액세서리 ────────────────────────────────────
-  acc_glasses:    { x: 58,  y: 76,  w: 84,  h: 36 }, // 눈 레벨
-  acc_sunglasses: { x: 58,  y: 76,  w: 84,  h: 36 },
-  acc_ribbon:     { x: 60,  y: 30,  w: 80,  h: 52 }, // 머리 위 (리본은 머리에)
-  acc_necklace:   { x: 66,  y: 126, w: 68,  h: 58 }, // 가슴
-  acc_bow:        { x: 68,  y: 120, w: 64,  h: 44 }, // 목
-  acc_medal:      { x: 66,  y: 126, w: 68,  h: 62 }, // 가슴
-
-  // ── 동반자 (오른쪽 하단) ──────────────────────────
-  pet_cat:     { x: 124, y: 152, w: 74, h: 96 },
-  pet_dog:     { x: 124, y: 155, w: 74, h: 92 },
-  pet_dragon:  { x: 120, y: 144, w: 78, h: 104 },
-  pet_unicorn: { x: 120, y: 146, w: 78, h: 102 },
-  pet_star:    { x: 128, y: 158, w: 68, h: 84 },
-  pet_robot:   { x: 124, y: 150, w: 74, h: 98 },
-
-  // ── 배경 (전체, blend 없음) ──────────────────────
-  bg_rainbow: { x: 0, y: 0, w: 200, h: 260, bg: true },
-  bg_star:    { x: 0, y: 0, w: 200, h: 260, bg: true },
-  bg_flower:  { x: 0, y: 0, w: 200, h: 260, bg: true },
-  bg_ocean:   { x: 0, y: 0, w: 200, h: 260, bg: true },
-  bg_forest:  { x: 0, y: 0, w: 200, h: 260, bg: true },
-  bg_fire:    { x: 0, y: 0, w: 200, h: 260, bg: true },
+// 아이템별 위치 (200×270 기준 px)
+const POS = {
+  hat_baseball:  { top:  8, left: 55, w: 90, h: 54 },
+  hat_tophat:    { top:  2, left: 59, w: 82, h: 58 },
+  hat_grad:      { top:  6, left: 56, w: 88, h: 54 },
+  hat_crown:     { top: 12, left: 59, w: 82, h: 46 },
+  hat_wizard:    { top: -4, left: 51, w: 98, h: 66 },
+  hat_santa:     { top:  6, left: 55, w: 90, h: 54 },
+  acc_glasses:    { top: 78, left: 57, w: 86, h: 36 },
+  acc_sunglasses: { top: 78, left: 57, w: 86, h: 36 },
+  acc_ribbon:     { top: 30, left: 61, w: 78, h: 50 },
+  acc_necklace:   { top:128, left: 63, w: 74, h: 58 },
+  acc_bow:        { top:122, left: 67, w: 66, h: 42 },
+  acc_medal:      { top:128, left: 65, w: 70, h: 62 },
+  pet_cat:     { top:148, left:120, w: 76, h:100 },
+  pet_dog:     { top:152, left:120, w: 76, h: 96 },
+  pet_dragon:  { top:140, left:116, w: 82, h:108 },
+  pet_unicorn: { top:142, left:116, w: 82, h:106 },
+  pet_star:    { top:155, left:122, w: 72, h: 88 },
+  pet_robot:   { top:146, left:120, w: 76, h:102 },
 }
 
-function ItemImg({ id, isBg }) {
-  const pos = POSITIONS[id]
-  if (!pos) return null
-  return (
-    <image
-      href={`/items/${id}.jpg`}
-      x={pos.x} y={pos.y} width={pos.w} height={pos.h}
-      preserveAspectRatio="xMidYMid meet"
-      style={isBg ? {} : { mixBlendMode: 'multiply' }}
-    />
-  )
-}
-
-// ── 베이스 캐릭터 SVG ────────────────────────────
-function CharacterBase({ gender }) {
-  const isMale = gender === 'male'
+// ── 베이스 캐릭터 (SVG 내부 요소들) ──────────────
+function CharacterBody({ gender }) {
+  const isMale    = gender !== 'female'
   const robeColor = isMale ? '#3b82f6' : '#ec4899'
   const robeDark  = isMale ? '#1d4ed8' : '#be185d'
   const robeTrim  = isMale ? '#93c5fd' : '#fbcfe8'
@@ -62,146 +30,178 @@ function CharacterBase({ gender }) {
   const eyeColor  = isMale ? '#1d4ed8' : '#7c3aed'
 
   return (
-    <g>
+    <>
       {/* 그림자 */}
-      <ellipse cx="100" cy="254" rx="46" ry="7" fill="rgba(0,0,0,0.12)" />
+      <ellipse cx="100" cy="263" rx="48" ry="7" fill="rgba(0,0,0,0.12)" />
 
-      {/* 로브 */}
-      <path d="M58,148 Q52,200 48,255 L152,255 Q148,200 142,148 Z" fill={robeColor} />
-      <path d="M100,148 Q98,200 97,255" fill="none" stroke={robeDark} strokeWidth="2" opacity="0.4" />
+      {/* 로브 몸체 */}
+      <path d="M58,152 Q52,205 48,262 L152,262 Q148,205 142,152 Z" fill={robeColor} />
+      <path d="M100,152 Q98,205 97,262" fill="none" stroke={robeDark} strokeWidth="2" opacity="0.4" />
       {/* 소매 왼 */}
-      <path d="M58,148 Q38,158 30,185 Q36,190 46,180 Q52,165 62,158 Z" fill={robeColor} stroke={robeDark} strokeWidth="1" />
-      <ellipse cx="32" cy="188" rx="10" ry="8" fill="#fde68a" stroke="#fbbf24" strokeWidth="1" />
+      <path d="M58,152 Q38,162 30,190 Q36,195 46,185 Q52,170 62,162 Z" fill={robeColor} stroke={robeDark} strokeWidth="1" />
+      <ellipse cx="32" cy="193" rx="10" ry="8" fill="#fde68a" stroke="#fbbf24" strokeWidth="1" />
       {/* 소매 우 */}
-      <path d="M142,148 Q162,158 170,185 Q164,190 154,180 Q148,165 138,158 Z" fill={robeColor} stroke={robeDark} strokeWidth="1" />
-      <ellipse cx="168" cy="188" rx="10" ry="8" fill="#fde68a" stroke="#fbbf24" strokeWidth="1" />
+      <path d="M142,152 Q162,162 170,190 Q164,195 154,185 Q148,170 138,162 Z" fill={robeColor} stroke={robeDark} strokeWidth="1" />
+      <ellipse cx="168" cy="193" rx="10" ry="8" fill="#fde68a" stroke="#fbbf24" strokeWidth="1" />
       {/* 트림 */}
-      <path d="M48,250 Q100,260 152,250 L152,255 Q100,265 48,255 Z" fill={robeTrim} />
-      <path d="M68,148 Q100,144 132,148" fill="none" stroke={robeTrim} strokeWidth="3" />
+      <path d="M48,258 Q100,268 152,258 L152,262 Q100,272 48,262 Z" fill={robeTrim} />
+      <path d="M68,152 Q100,148 132,152" fill="none" stroke={robeTrim} strokeWidth="3" />
 
       {/* 목 */}
-      <rect x="88" y="136" width="24" height="16" rx="8" fill="#fde68a" />
+      <rect x="88" y="140" width="24" height="16" rx="8" fill="#fde68a" />
 
       {/* 머리 */}
-      <circle cx="100" cy="95" r="48" fill="#fde68a" stroke="#fbbf24" strokeWidth="1.5" />
+      <circle cx="100" cy="97" r="48" fill="#fde68a" stroke="#fbbf24" strokeWidth="1.5" />
 
       {/* 머리카락 */}
       {isMale ? (
         <g fill={hairColor}>
-          <ellipse cx="100" cy="52" rx="46" ry="16" />
-          <ellipse cx="68"  cy="60" rx="16" ry="20" />
-          <ellipse cx="132" cy="60" rx="16" ry="20" />
-          <ellipse cx="80"  cy="50" rx="10" ry="8"  transform="rotate(-20,80,50)" />
-          <ellipse cx="100" cy="47" rx="8"  ry="10" />
-          <ellipse cx="120" cy="50" rx="10" ry="8"  transform="rotate(20,120,50)" />
+          <ellipse cx="100" cy="54" rx="46" ry="16" />
+          <ellipse cx="68"  cy="62" rx="16" ry="20" />
+          <ellipse cx="132" cy="62" rx="16" ry="20" />
+          <ellipse cx="80"  cy="52" rx="10" ry="8"  transform="rotate(-20,80,52)" />
+          <ellipse cx="100" cy="49" rx="8"  ry="10" />
+          <ellipse cx="120" cy="52" rx="10" ry="8"  transform="rotate(20,120,52)" />
         </g>
       ) : (
-        <g>
-          <ellipse cx="100" cy="52" rx="44" ry="14" fill={hairColor} />
-          <ellipse cx="76"  cy="56" rx="20" ry="22" fill={hairColor} />
-          <ellipse cx="124" cy="56" rx="20" ry="22" fill={hairColor} />
-          <path d="M54,100 Q30,120 36,155 Q46,165 52,145 Q50,120 62,108 Z" fill={hairColor} />
-          <path d="M146,100 Q170,120 164,155 Q154,165 148,145 Q150,120 138,108 Z" fill={hairColor} />
+        <g fill={hairColor}>
+          {/* 앞머리 */}
+          <ellipse cx="100" cy="54" rx="44" ry="14" />
+          <ellipse cx="76"  cy="58" rx="20" ry="22" />
+          <ellipse cx="124" cy="58" rx="20" ry="22" />
+          {/* 트윈테일 왼 */}
+          <path d="M54,102 Q28,125 34,162 Q44,172 50,150 Q48,124 62,112 Z" />
+          {/* 트윈테일 우 */}
+          <path d="M146,102 Q172,125 166,162 Q156,172 150,150 Q152,124 138,112 Z" />
           {/* 리본 왼 */}
-          <path d="M54,100 L44,92 L48,100 L44,108 Z" fill="#fda4af" />
-          <path d="M54,100 L64,92 L60,100 L64,108 Z" fill="#fda4af" />
-          <circle cx="54" cy="100" r="4" fill="#ec4899" />
+          <path d="M54,102 L44,93 L49,102 L44,111 Z" fill="#fda4af" />
+          <path d="M54,102 L64,93 L59,102 L64,111 Z" fill="#fda4af" />
+          <circle cx="54" cy="102" r="5" fill="#ec4899" />
           {/* 리본 우 */}
-          <path d="M146,100 L136,92 L140,100 L136,108 Z" fill="#fda4af" />
-          <path d="M146,100 L156,92 L152,100 L156,108 Z" fill="#fda4af" />
-          <circle cx="146" cy="100" r="4" fill="#ec4899" />
+          <path d="M146,102 L136,93 L141,102 L136,111 Z" fill="#fda4af" />
+          <path d="M146,102 L156,93 L151,102 L156,111 Z" fill="#fda4af" />
+          <circle cx="146" cy="102" r="5" fill="#ec4899" />
         </g>
       )}
 
       {/* 눈썹 */}
-      <path d="M80,76 Q88,72 94,76"  fill="none" stroke="#92400e" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M106,76 Q112,72 120,76" fill="none" stroke="#92400e" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M80,78 Q88,74 94,78"   fill="none" stroke="#6b3f0f" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M106,78 Q112,74 120,78" fill="none" stroke="#6b3f0f" strokeWidth="2.5" strokeLinecap="round" />
 
-      {/* 눈 */}
-      <ellipse cx="87"  cy="90" rx="10" ry="11" fill="white" />
-      <ellipse cx="113" cy="90" rx="10" ry="11" fill="white" />
-      <circle cx="87"  cy="91" r="7" fill={eyeColor} />
-      <circle cx="113" cy="91" r="7" fill={eyeColor} />
-      <circle cx="88"  cy="91" r="4" fill="#1a1a2e" />
-      <circle cx="114" cy="91" r="4" fill="#1a1a2e" />
-      <circle cx="90"  cy="88" r="2.5" fill="white" />
-      <circle cx="116" cy="88" r="2.5" fill="white" />
-      <path d="M77,82 Q87,79 97,82"   fill="none" stroke="#1f2937" strokeWidth="1.5" />
-      <path d="M103,82 Q113,79 123,82" fill="none" stroke="#1f2937" strokeWidth="1.5" />
+      {/* 눈 흰자 */}
+      <ellipse cx="87"  cy="92" rx="10" ry="11" fill="white" />
+      <ellipse cx="113" cy="92" rx="10" ry="11" fill="white" />
+      {/* 홍채 */}
+      <circle cx="87"  cy="93" r="7" fill={eyeColor} />
+      <circle cx="113" cy="93" r="7" fill={eyeColor} />
+      {/* 동공 */}
+      <circle cx="88"  cy="93" r="4" fill="#111" />
+      <circle cx="114" cy="93" r="4" fill="#111" />
+      {/* 하이라이트 */}
+      <circle cx="90"  cy="90" r="2.5" fill="white" />
+      <circle cx="116" cy="90" r="2.5" fill="white" />
+      {/* 속눈썹 */}
+      <path d="M77,84 Q87,81 97,84"   fill="none" stroke="#1f2937" strokeWidth="1.5" />
+      <path d="M103,84 Q113,81 123,84" fill="none" stroke="#1f2937" strokeWidth="1.5" />
 
       {/* 볼터치 */}
-      <ellipse cx="73"  cy="104" rx="11" ry="7" fill="#fda4af" opacity="0.6" />
-      <ellipse cx="127" cy="104" rx="11" ry="7" fill="#fda4af" opacity="0.6" />
+      <ellipse cx="73"  cy="106" rx="11" ry="7" fill="#fda4af" opacity="0.55" />
+      <ellipse cx="127" cy="106" rx="11" ry="7" fill="#fda4af" opacity="0.55" />
 
       {/* 코·입 */}
-      <ellipse cx="100" cy="106" rx="5" ry="4" fill="#fbbf24" opacity="0.5" />
-      <path d="M88,116 Q100,124 112,116" fill="none" stroke="#e11d48" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M92,118 Q100,124 108,118" fill="white" opacity="0.7" />
+      <ellipse cx="100" cy="108" rx="5" ry="4" fill="#fbbf24" opacity="0.4" />
+      <path d="M88,118 Q100,126 112,118" fill="none" stroke="#e11d48" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M92,120 Q100,126 108,120" fill="white" opacity="0.65" />
 
       {/* 지팡이 */}
-      <line x1="168" y1="188" x2="185" y2="150" stroke="#92400e" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="185" cy="146" r="7" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1.5" />
-      <circle cx="185" cy="146" r="4" fill="white" opacity="0.8" />
-      <text x="178" y="136" fontSize="10" fill="#fbbf24" opacity="0.9">✦</text>
-    </g>
+      <line x1="168" y1="193" x2="186" y2="154" stroke="#92400e" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="186" cy="150" r="7" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1.5" />
+      <circle cx="186" cy="150" r="4" fill="white" opacity="0.8" />
+      <text x="179" y="140" fontSize="11" fill="#fbbf24">✦</text>
+    </>
   )
 }
 
 // ── 메인 컴포넌트 ────────────────────────────────
 export default function CharacterSVG({ equipped, gender = 'male', size = 'md', playerData }) {
   const { hat, accessory, companion, background } = equipped || {}
-  const isLg = size === 'lg'
-  const W = isLg ? 200 : 144
-  const H = isLg ? 260 : 187
+  const isLg  = size === 'lg'
+  const scale = isLg ? 1 : 0.72
+  const W     = Math.round(200 * scale)
+  const H     = Math.round(270 * scale)
+
+  const itemStyle = (pos) => ({
+    position:      'absolute',
+    top:           pos.top  * scale,
+    left:          pos.left * scale,
+    width:         pos.w    * scale,
+    height:        pos.h    * scale,
+    objectFit:     'contain',
+    mixBlendMode:  'multiply',
+    pointerEvents: 'none',
+  })
 
   return (
     <div style={{
+      position:     'relative',
+      width:        W,
+      height:       H,
       borderRadius: isLg ? '20px' : '16px',
-      overflow: 'hidden',
-      border: '3px solid rgba(255,255,255,0.9)',
-      boxShadow: '0 6px 24px rgba(0,0,0,0.15)',
-      margin: '0 auto',
-      display: 'inline-block',
+      overflow:     'hidden',
+      border:       '3px solid rgba(255,255,255,0.9)',
+      boxShadow:    '0 6px 24px rgba(0,0,0,0.15)',
+      margin:       '0 auto',
+      flexShrink:   0,
     }}>
-      <svg width={W} height={H} viewBox="0 0 200 260" style={{ display: 'block' }}>
 
-        {/* 1. 배경 */}
-        {background
-          ? <ItemImg id={background.id} isBg />
-          : <>
-              <defs>
-                <linearGradient id="defBg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#bfdbfe" />
-                  <stop offset="100%" stopColor="#bbf7d0" />
-                </linearGradient>
-              </defs>
-              <rect width="200" height="260" fill="url(#defBg)" />
-            </>
-        }
+      {/* 1. 배경 */}
+      {background
+        ? <img src={`/items/${background.id}.jpg`} alt={background.name}
+            style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
+        : <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg,#bfdbfe,#bbf7d0)' }} />
+      }
 
-        {/* 2. 동반자 이미지 (캐릭터 뒤에) */}
-        {companion && <ItemImg id={companion.id} />}
+      {/* 2. 동반자 (캐릭터 뒤) */}
+      {companion && POS[companion.id] && (
+        <img src={`/items/${companion.id}.jpg`} alt={companion.name}
+          onError={e => { e.target.style.display='none' }}
+          style={itemStyle(POS[companion.id])} />
+      )}
 
-        {/* 3. 모자 이미지 (캐릭터 뒤에 그려지는 부분) */}
-        {hat && <ItemImg id={hat.id} />}
-
-        {/* 4. 메인 SVG 캐릭터 */}
-        <CharacterBase gender={gender} />
-
-        {/* 5. 액세서리 이미지 (캐릭터 위에) */}
-        {accessory && <ItemImg id={accessory.id} />}
-
-        {/* 6. 레벨 뱃지 */}
-        {playerData && (
-          <g>
-            <rect x="148" y="6" width="44" height="18" rx="9" fill="rgba(255,255,255,0.95)" />
-            <text x="152" y="19" fontSize="11" fontWeight="bold" fill="#1d4ed8">
-              Lv.{playerData.level}
-            </text>
-          </g>
-        )}
-
+      {/* 3. 베이스 캐릭터 SVG */}
+      <svg
+        width={W} height={H}
+        viewBox="0 0 200 270"
+        style={{ position:'absolute', inset:0, display:'block' }}
+      >
+        <CharacterBody gender={gender} />
       </svg>
+
+      {/* 4. 모자 (캐릭터 위) */}
+      {hat && POS[hat.id] && (
+        <img src={`/items/${hat.id}.jpg`} alt={hat.name}
+          onError={e => { e.target.style.display='none' }}
+          style={itemStyle(POS[hat.id])} />
+      )}
+
+      {/* 5. 액세서리 (캐릭터 위) */}
+      {accessory && POS[accessory.id] && (
+        <img src={`/items/${accessory.id}.jpg`} alt={accessory.name}
+          onError={e => { e.target.style.display='none' }}
+          style={itemStyle(POS[accessory.id])} />
+      )}
+
+      {/* 6. 레벨 뱃지 */}
+      {playerData && (
+        <div style={{
+          position:'absolute', top:6, right:6,
+          background:'rgba(255,255,255,0.95)', borderRadius:'99px',
+          padding:'2px 8px', fontSize:'11px', fontWeight:'bold', color:'#1d4ed8',
+          boxShadow:'0 1px 4px rgba(0,0,0,0.15)',
+        }}>
+          Lv.{playerData.level}
+        </div>
+      )}
     </div>
   )
 }

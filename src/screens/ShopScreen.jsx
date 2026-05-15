@@ -22,19 +22,19 @@ export default function ShopScreen({ playerData, actions }) {
     : equipped
 
   const handleBuy = (item) => {
+    setPreviewItem(item) // 항상 미리보기 업데이트
     if (owned.includes(item.id)) {
-      // 이미 보유 → 장착/해제
       actions.toggleEquip(item)
       return
     }
-    if (playerData.coins < item.price) {
+    if ((playerData.coins || 0) < item.price) {
       setBuyResult({ success: false, item })
-      setTimeout(() => setBuyResult(null), 2000)
+      setTimeout(() => setBuyResult(null), 2500)
       return
     }
     actions.buyItem(item)
     setBuyResult({ success: true, item })
-    setTimeout(() => setBuyResult(null), 2000)
+    setTimeout(() => setBuyResult(null), 2500)
   }
 
   const getCategoryLabel = (cat) => CATEGORIES.find(c => c.id === cat)?.label || cat
@@ -123,9 +123,6 @@ export default function ShopScreen({ playerData, actions }) {
 
             return (
               <div key={item.id}
-                onMouseEnter={() => setPreviewItem(item)}
-                onMouseLeave={() => setPreviewItem(null)}
-                onTouchStart={() => setPreviewItem(item)}
                 style={{
                   background: isEquipped ? 'linear-gradient(135deg, #ede9fe, #fae8ff)' : 'white',
                   border: `2px solid ${isEquipped ? '#a78bfa' : isOwned ? '#6ee7b7' : '#e5e7eb'}`,
