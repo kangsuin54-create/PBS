@@ -26,7 +26,10 @@ export default function AuthScreen({ onLogin }) {
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { nickname } },
+      options: {
+        data: { nickname },
+        emailRedirectTo: 'https://pbs-social-trainer.vercel.app',
+      },
     })
     setLoading(false)
     if (err) { setError('회원가입에 실패했어요: ' + err.message); return }
