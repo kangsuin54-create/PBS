@@ -8,14 +8,14 @@ const OUT_DIR = './public/items'
 const STYLE = 'cute chibi kawaii illustration, bright pastel colors, thick clean outlines, flat colors, white background, no shadows, children game art style, high quality'
 
 const ITEMS = [
-  // ── 베이스 캐릭터 (남/여) ──
+  // ── 베이스 캐릭터 (남/여) - 모자 없음, 흰 배경 ──
   {
     id: 'character_male',
-    prompt: `cute chibi boy wizard character, small body big head, front facing full body, blue magical robe, short spiky brown hair, big round sparkling eyes, rosy cheeks, tiny hands and feet, standing upright, friendly smile, ${STYLE}`,
+    prompt: `cute chibi boy wizard character, full body front view, NO HAT bare head short spiky brown hair only, blue magical robe with gold trim, holding a glowing magic wand, big sparkling brown eyes, rosy cheeks, warm smile, centered, pure white background, isolated character, ${STYLE}`,
   },
   {
     id: 'character_female',
-    prompt: `cute chibi girl wizard character, small body big head, front facing full body, pink magical robe, long twin-tail pink hair with ribbons, big round sparkling eyes, rosy cheeks, tiny hands and feet, standing upright, sweet smile, ${STYLE}`,
+    prompt: `cute chibi girl wizard character, full body front view, NO HAT bare head long twin-tail pink hair with small ribbon clips only, pink magical robe with white trim, holding a glowing magic wand, big sparkling purple eyes, rosy cheeks, sweet smile, centered, pure white background, isolated character, ${STYLE}`,
   },
 
   // ── 모자 ──
