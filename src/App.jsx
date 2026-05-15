@@ -18,6 +18,7 @@ const INITIAL_PROGRESS = {
 
 const makeInitialPlayer = (user) => ({
   name: user?.user_metadata?.nickname || user?.email?.split('@')[0] || '용감한 모험가',
+  gender: user?.user_metadata?.gender || 'male',
   exp: 0, level: 1, teamPoints: 0, coins: 0,
   badges: [], items: [], ownedItems: [],
   equippedItems: { ...INITIAL_EQUIPPED },
@@ -115,10 +116,14 @@ export default function App() {
     setPlayerData(prev => ({ ...prev, equippedItems: { ...prev.equippedItems, [category]: null } }))
   }
 
+  const setGender = (gender) => {
+    setPlayerData(prev => ({ ...prev, gender }))
+  }
+
   const gameActions = {
     addExp, addCoins, addTeamPoints, addBadge, addItem,
     updateProgress, addSessionReward,
-    buyItem, toggleEquip, unequip,
+    buyItem, toggleEquip, unequip, setGender,
     goTo: setScreen,
   }
 

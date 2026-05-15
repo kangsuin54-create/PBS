@@ -60,7 +60,7 @@ export default function MyPageScreen({ playerData, user, actions, onLogout }) {
         }}>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <div style={{ flex: '0 0 130px' }}>
-              <CharacterPreview equipped={equipped} size="md" playerData={playerData} />
+              <CharacterPreview equipped={equipped} size="md" playerData={playerData} gender={playerData.gender || 'male'} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 'bold', fontSize: isMobile ? '17px' : '20px', color: '#1f2937', marginBottom: '4px' }}>
@@ -83,6 +83,24 @@ export default function MyPageScreen({ playerData, user, actions, onLogout }) {
                   }}>{b.label}</span>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* 성별 변경 */}
+          <div style={{ marginTop: '12px', borderTop: '2px solid #f3f4f6', paddingTop: '10px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#6b7280', marginBottom: '6px' }}>캐릭터 변경</div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {[
+                { value: 'male', label: '🧙‍♂️ 남자', color: '#dbeafe', border: '#60a5fa' },
+                { value: 'female', label: '🧙‍♀️ 여자', color: '#fce7f3', border: '#f9a8d4' },
+              ].map(opt => (
+                <button key={opt.value} onClick={() => actions.setGender(opt.value)} style={{
+                  flex: 1, padding: '8px', border: `2px solid ${(playerData.gender || 'male') === opt.value ? opt.border : '#e5e7eb'}`,
+                  borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold',
+                  background: (playerData.gender || 'male') === opt.value ? opt.color : 'white',
+                  transition: 'all 0.2s',
+                }}>{opt.label}</button>
+              ))}
             </div>
           </div>
 

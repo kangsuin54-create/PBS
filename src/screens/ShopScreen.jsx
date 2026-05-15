@@ -67,7 +67,7 @@ export default function ShopScreen({ playerData, actions }) {
           <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#7c3aed', marginBottom: '8px' }}>
             ✨ 내 캐릭터 미리보기
           </div>
-          <CharacterPreview equipped={previewEquipped} size="lg" playerData={playerData} />
+          <CharacterPreview equipped={previewEquipped} size="lg" playerData={playerData} gender={playerData.gender || 'male'} />
           {previewItem && (
             <div style={{
               textAlign: 'center', marginTop: '8px', fontSize: '13px',

@@ -8,6 +8,7 @@ export default function AuthScreen({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [nickname, setNickname] = useState('')
+  const [gender, setGender] = useState('male')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -29,7 +30,7 @@ export default function AuthScreen({ onLogin }) {
       email,
       password,
       options: {
-        data: { nickname },
+        data: { nickname, gender },
         emailRedirectTo: 'https://pbs-social-trainer.vercel.app',
       },
     })
@@ -87,24 +88,48 @@ export default function AuthScreen({ onLogin }) {
         {/* 폼 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {mode === 'signup' && (
-            <div>
-              <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', display: 'block', marginBottom: '6px' }}>
-                🌟 닉네임
-              </label>
-              <input
-                value={nickname}
-                onChange={e => setNickname(e.target.value)}
-                placeholder="모험가 이름을 입력하세요"
-                style={{
-                  width: '100%', padding: '12px 14px', border: '2px solid #e5e7eb',
-                  borderRadius: '12px', fontSize: '15px', outline: 'none',
-                  fontFamily: 'inherit', boxSizing: 'border-box',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={e => e.target.style.borderColor = '#6ee7b7'}
-                onBlur={e => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
+            <>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', display: 'block', marginBottom: '6px' }}>
+                  🌟 닉네임
+                </label>
+                <input
+                  value={nickname}
+                  onChange={e => setNickname(e.target.value)}
+                  placeholder="모험가 이름을 입력하세요"
+                  style={{
+                    width: '100%', padding: '12px 14px', border: '2px solid #e5e7eb',
+                    borderRadius: '12px', fontSize: '15px', outline: 'none',
+                    fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#6ee7b7'}
+                  onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                  🧙 내 캐릭터 선택
+                </label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {[
+                    { value: 'male', label: '남자', emoji: '🧙‍♂️', desc: '파란 로브 마법사', color: '#dbeafe', border: '#60a5fa' },
+                    { value: 'female', label: '여자', emoji: '🧙‍♀️', desc: '핑크 로브 마법사', color: '#fce7f3', border: '#f9a8d4' },
+                  ].map(opt => (
+                    <button key={opt.value} type="button" onClick={() => setGender(opt.value)} style={{
+                      flex: 1, padding: '14px 8px', border: `3px solid ${gender === opt.value ? opt.border : '#e5e7eb'}`,
+                      borderRadius: '14px', cursor: 'pointer', textAlign: 'center',
+                      background: gender === opt.value ? opt.color : 'white',
+                      transition: 'all 0.2s',
+                    }}>
+                      <div style={{ fontSize: '36px', marginBottom: '4px' }}>{opt.emoji}</div>
+                      <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#1f2937' }}>{opt.label}</div>
+                      <div style={{ fontSize: '11px', color: '#6b7280' }}>{opt.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
 
           <div>
